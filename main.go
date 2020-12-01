@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"zapood/config"
-	"zapood/models"
+	"zapood/restapi"
 )
 
 func main() {
@@ -15,17 +15,18 @@ func Demo1() {
 	if err != nil {
 		fmt.Println(err)
 	} else {
-		userModel := models.UserModel{
-			DB: db,
-		}
-		users, err2 := userModel.FindAll()
-		if err2 != nil {
-			fmt.Println(err2)
-		} else {
-			for _, user := range users {
-				fmt.Println(user.ToString())
-				fmt.Println("------------------------")
-			}
-		}
+		restapi.RunApi("localhost:8383", db)
+		// userModel := models.UserModel{
+		// 	DB: db,
+		// }
+		// users, err2 := userModel.FindAll()
+		// if err2 != nil {
+		// 	fmt.Println(err2)
+		// } else {
+		// 	for _, user := range users {
+		// 		fmt.Println(user.ToString())
+		// 		fmt.Println("------------------------")
+		// 	}
+		// }
 	}
 }
