@@ -14,7 +14,11 @@ func RunApi(endpoint string, DB *gorm.DB) error {
 }
 
 func RunApiOnRouter(r *mux.Router, DB *gorm.DB) {
-	handler := NewUserModel(DB)
-	apiRouter := r.PathPrefix("/api/User/").Subrouter()
-	apiRouter.Methods("GET").Path("/GetAllUsers").HandlerFunc(handler.GetAllUsers)
+	authHandler := NewAuthModel(DB)
+	r.Methods("POST").Path("/api/auth/login").HandlerFunc(authHandler.Login)
+
+	userHandler := NewUserModel(DB)
+	r.Methods("GET").Path("/api/User/GetAllUsers").HandlerFunc(userHandler.GetAllUsers)
+	r.Methods("POST").Path("/api/User/{operation:(?:add|edit)}").HandlerFunc(userHandler.Operation)
+	r.Methods("POST").Path("/api/User/delete/{id}").HandlerFunc(userHandler.Delete)
 }
