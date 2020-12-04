@@ -72,11 +72,40 @@ func (authModel AuthModel) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	http.SetCookie(w, &http.Cookie{
-		Name:     "JWT_Token",
+		Name:     "JWTToken",
 		Expires:  expireTime,
 		Value:    stringToken,
 		HttpOnly: true,
 	})
 	json.NewEncoder(w).Encode(user)
 	return
+}
+
+func IsLogedin(r *http.Request) (LoginInfo, bool) {
+
+	c, err := r.Cookie("JWTToken")
+	if err != nil {
+		return LoginInfo{}, false
+	}
+
+	tokenString := c.Value
+
+	claims := &Claims{}
+
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+		return jwtKey, nil
+	})
+	if !token.Valid {
+		return LoginInfo{}, false
+	}
+	if err != nil {
+		if err == jwt.ErrSignatureInvalid {
+			return LoginInfo{}, false
+		}
+		return LoginInfo{}, false
+	}
+
+	return LoginInfo{
+		UserName: claims.UserName,
+	}, true
 }
